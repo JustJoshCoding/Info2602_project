@@ -1,6 +1,9 @@
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
+import MySQLdb
+import time
+import json
  
 import twitter_credentials
  
@@ -33,9 +36,15 @@ class StdOutListener(StreamListener):
 
     def on_data(self, data):
         try:
-            print(data)
+            #print(data)
+            tweet = data.split(',"text":"')[1].split('","source')[0]
+            
+            print(tweet)
+
             with open(self.fetched_tweets_filename, 'a') as tf:
-                tf.write(data)
+                saveThis = str(time.time())+'::::'+tweet
+                tf.write(saveThis)
+                tf.write('\n')
             return True
         except BaseException as e:
             print("Error on_data %s" % str(e))
@@ -45,7 +54,8 @@ class StdOutListener(StreamListener):
     def on_error(self, status):
         print(status)
 
- 
+
+
 if __name__ == '__main__':
  
     # Authenticate using config.py and connect to Twitter Streaming API.
